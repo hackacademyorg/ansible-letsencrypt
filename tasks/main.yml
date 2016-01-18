@@ -32,16 +32,11 @@
       - git+https://github.com/kuba/ConfigArgParse.git@python2.6-0.9.3#egg=ConfigArgParse
       - letsencrypt
 
-
   - name: Attempt to get the certificate using the webroot authenticator
-    command: "{{ letsencrypt_command }} -a webroot -d {{letsencrypt_cert_domains | join(' -d ')}} --webroot-path {{ letsencrypt_webroot_path }} certonly"
-    args:
-      creates: "/etc/letsencrypt/live/{{letsencrypt_cert_domains[0]}}"
+    command: "{{ letsencrypt_command }} --expand -a webroot -d {{letsencrypt_cert_domains | join(' -d ')}} --webroot-path {{ letsencrypt_webroot_path }} certonly"
     when: letsencrypt_webroot_path is defined
     ignore_errors: True
 
   - name: Attempt to get the certificate using the standalone authenticator (in case eg the webserver isn't running yet)
-    command: "{{ letsencrypt_command }} -d {{letsencrypt_cert_domains | join(' -d ')}} -a standalone auth"
-    args:
-      creates: "/etc/letsencrypt/live/{{letsencrypt_cert_domains[0]}}"
+    command: "{{ letsencrypt_command }} --expand -d {{letsencrypt_cert_domains | join(' -d ')}} -a standalone auth"
     when: letsencrypt_webroot_path is not defined
